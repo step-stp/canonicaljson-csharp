@@ -14,10 +14,7 @@ namespace UnitTestCanonical
     [TestClass]
     public class CanonicalJsonTest
     {
-        private static string INPUT = "Resources/input/";
-        private static string OUTPUT = "Resources/output/";
-
-
+      
         /***
        * Reads both input file and expected file
        * Parse input file , Stringify the output 
@@ -29,8 +26,6 @@ namespace UnitTestCanonical
        */
         private string[] ApplyParseStringify(string inputFile, string expectedFile)
         {
-            //    File inputFileObj = new File(inputFile);
-
             string rawInput = String.Join("", File.ReadAllLines(inputFile, Encoding.UTF8));
 
             string expected = null;
@@ -51,16 +46,19 @@ namespace UnitTestCanonical
         public void CanonicalJsonSpecTests()
         {
             // get folders that contain input / expected json files.
-            string rootFolder = "Resources";
+            // ResourcesFolder set in configuration file
+
+            string rootFolder = System.Configuration.ConfigurationManager.AppSettings["ResourcesFolder"];
+
             ProcessTestFiles(rootFolder, true);
         }
 
         /***
-    * Processes all input files, creates output files in same folder, and compares the output to the expected. 
-    * An error is displayed if there is a comparison failure. 
-    * An error is displayed if there is a malformed JSON.
-    * @param folder
-    */
+        * Processes all input files, creates output files in same folder, and compares the output to the expected. 
+        * An error is displayed if there is a comparison failure. 
+        * An error is displayed if there is a malformed JSON.
+        * @param folder
+        */
         private void ProcessTestFiles(string folder, bool addLineSeparators)
         {
             List<string> testFolders = null;
@@ -69,11 +67,11 @@ namespace UnitTestCanonical
                 testFolders = new List<string>();
                 testFolders.Add(Path.GetDirectoryName(folder));
             }
-
-
             else if (Directory.Exists(folder))
                 testFolders = GetTestFolders(folder);
 
+            if (testFolders == null)
+                throw new IOException("Please select a valid file / folder");
 
             foreach (string testfolder in testFolders)
             {
@@ -87,8 +85,10 @@ namespace UnitTestCanonical
                     Console.Error.WriteLine("Input  files missing in " + Path.GetFullPath(testfolder));
                     continue;
                 }
+
                 if (!File.Exists(expected))
                     expected = null;
+
                 String[] expact = null;
                 try
                 {

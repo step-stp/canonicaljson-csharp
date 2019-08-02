@@ -129,6 +129,7 @@
       <HintPath>..\packages\MSTest.TestFramework.1.1.11\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -140,11 +141,16 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Resources\input\arrays.json" />
-    <None Include="Resources\input\french.json" />
-    <None Include="Resources\input\structures.json" />
-    <None Include="Resources\input\values.json" />
-    <None Include="Resources\input\weird.json" />
+    <None Include="Resources\InputOutput\arrays\expected.json" />
+    <None Include="Resources\InputOutput\arrays\input.json" />
+    <None Include="Resources\InputOutput\french\expected.json" />
+    <None Include="Resources\InputOutput\french\input.json" />
+    <None Include="Resources\InputOutput\structures\expected.json" />
+    <None Include="Resources\InputOutput\structures\input.json" />
+    <None Include="Resources\InputOutput\values\expected.json" />
+    <None Include="Resources\InputOutput\values\input.json" />
+    <None Include="Resources\InputOutput\weird\expected.json" />
+    <None Include="Resources\InputOutput\weird\input.json" />
     <None Include="Resources\malformed\empty\input.json" />
     <None Include="Resources\malformed\hex_number\input.json" />
     <None Include="Resources\malformed\invalid_string_character\input.json" />
@@ -163,11 +169,6 @@
     <None Include="Resources\malformed\unopened_array\input.json" />
     <None Include="Resources\malformed\unopened_object\input.json" />
     <None Include="Resources\malformed\unopened_string\input.json" />
-    <None Include="Resources\output\arrays.json" />
-    <None Include="Resources\output\french.json" />
-    <None Include="Resources\output\structures.json" />
-    <None Include="Resources\output\values.json" />
-    <None Include="Resources\output\weird.json" />
     <None Include="Resources\test\4.integer\1.no-negative-zero\expected.json" />
     <None Include="Resources\test\4.integer\1.no-negative-zero\input.json" />
     <None Include="Resources\test\4.integer\2.no-decimal-point\expected.json" />

@@ -48,7 +48,7 @@ namespace UnitTestCanonical
                 Object result;
 
                 result = new Parser(dt.Input).Parse();
-                Assert.AreEqual(dt.Output?.ToString(),result?.ToString());
+                Assert.AreEqual(dt.Output == null ? "NULL" : dt.Output.ToString(), result == null ? "NULL" : result.ToString());
 
 
             }
