@@ -59,7 +59,7 @@ namespace UnitTestCanonical
         * An error is displayed if there is a malformed JSON.
         * @param folder
         */
-        private void ProcessTestFiles(string folder, bool addLineSeparators)
+        public void ProcessTestFiles(string folder, bool addLineSeparators)
         {
             List<string> testFolders = null;
             if (File.Exists(folder))
@@ -123,14 +123,15 @@ namespace UnitTestCanonical
 
             List<string> testFoldersList = new List<string>();
             string[] subFolders = Directory.GetDirectories(parentFolder);
+            if (File.Exists(Path.Combine(parentFolder, "input.json")))
+                testFoldersList.Add(parentFolder);
+
             foreach (string folder in subFolders)
             {
 
                 if (File.Exists(Path.Combine(folder, "input.json")))
                 {
-
                     testFoldersList.Add(folder);
-
                 }
                 else
                     testFoldersList.AddRange(GetTestFolders(folder));
