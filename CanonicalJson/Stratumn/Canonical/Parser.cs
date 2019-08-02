@@ -1,4 +1,6 @@
-﻿using java.math;
+﻿
+using java.math;
+using Stratumn.Canonical.helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,22 +9,26 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Stratumn.CanonicalJson
+namespace Stratumn.Canonical
 {
 
-    /***
- * 
- * Parser class is responsible for parsing JSON streams and returning an object 
- * 
- * 
- */
-
+    /// <summary>
+    /// @ copyright Stratumn
+    /// </summary>
     public class Parser
     {
 
         private static readonly char NULL_CHAR = '\u0000';
         private static readonly Regex BOOLEAN_PATTERN = new Regex("true|false", RegexOptions.IgnoreCase);
         private static readonly Regex NUMBER_PATTERN = new Regex("-?[0-9]+(\\.[0-9]+)?([eE][-+]?[0-9]+)?", RegexOptions.IgnoreCase);
+
+        private static readonly Regex BAD_NUMBER_PATTERN = new Regex("^-?0\\d+");
+
+        // Regular expressions that matches characters otherwise inexpressible in
+        // JSON (U+0022 QUOTATION MARK, U+005C REVERSE SOLIDUS,
+        // and ASCII control characters U+0000 through U+001F) or UTF-8 (U+D800 through
+        // U+DFFF)
+        private static readonly Regex FORBIDDEN = new Regex("[\\u0022\\u005c\\u0000-\\u001F\\ud800-\\udfff]");
 
         private static readonly Regex HEX_PATTERN = new Regex("([0-9,a-f,A-F]){4}", RegexOptions.IgnoreCase);
 
@@ -65,6 +71,7 @@ namespace Stratumn.CanonicalJson
         /***
          * Initiates parsing next element based on type 
          * @return
+         * @throws IOException
          */
         private Object ParseElement()
         {
@@ -76,6 +83,9 @@ namespace Stratumn.CanonicalJson
                     return ParseObject();
                 case Constants.C_DOUBLE_QUOTE:
                     return ParseQuotedString();
+                case Constants.NULL_CHAR:
+                    throw new IOException("Unexpected end of data reached");
+
                 default:
                     return ParseSimpleType();
             }
@@ -84,10 +94,11 @@ namespace Stratumn.CanonicalJson
         /***
          * Parses an object of the form "{"key":value}" or empty object {}
          * @return
+         * @throws IOException
          */
         private Object ParseObject()
         {
-            SortedDictionary<string, object> dict = new SortedDictionary<string, object>();
+            SortedDictionary<string, object> dict = new SortedDictionary<string, object>(new LexComparator());
             bool next = false;
             //chr = { 
             while (Peek() != Constants.C_RIGHT_CURLY_BRACKET)
@@ -102,23 +113,23 @@ namespace Stratumn.CanonicalJson
                 string name = ParseQuotedString();
                 ScanFor(Constants.C_COLON);
                 //chr = : 
-
+                object val = ParseElement();
                 if (dict.ContainsKey(name))
                 {
                     throw new IOException("Duplicate property: " + name);
                 }
-
-                dict.Add(name, ParseElement());
+                dict.Add(name, val);
 
             }
             Scan();
-       
+
             return dict;
         }
 
         /***
 	     * Parses Arrays of the form [X,Y,Z] or empty [] 
 	     * @return
+	     * @throws IOException
 	     */
         private Object ParseArray()
         {
@@ -146,6 +157,7 @@ namespace Stratumn.CanonicalJson
         /***
 	     * Parses Boolean Numeric and null values
 	     * @return
+	     * @throws IOException
 	     */
         private Object ParseSimpleType()
         {
@@ -173,6 +185,10 @@ namespace Stratumn.CanonicalJson
             }
             if (NUMBER_PATTERN.Matches(token).Count > 0)
             {
+                if (BAD_NUMBER_PATTERN.Matches(token).Count > 0)
+                {
+                    throw new IOException("Bad number: leading zero: " + token);
+                }
                 return new BigDecimal(token);
             }
             else if (BOOLEAN_PATTERN.Matches(token).Count > 0)
@@ -192,12 +208,13 @@ namespace Stratumn.CanonicalJson
         /***
          * parse string tokens between two quotes.
          * @return
+         * @throws IOException
          */
         private string ParseQuotedString()
         {
             StringBuilder result = new StringBuilder();
-
-            // When parsing for string values, we must look for " and \ characters.            
+            // When parsing for string values, we must look for " and \ characters.
+            //current chr = "
             if (chr != Constants.C_DOUBLE_QUOTE)
             {
                 throw new IOException("Bad String");
@@ -207,8 +224,7 @@ namespace Stratumn.CanonicalJson
                 if (chr < ' ')
                 {
                     throw new IOException(chr == '\n' ? "Unterminated string literal" : "Unescaped control character: 0x" + Convert.ToString(chr, 16));
-                } 
-                  // escaped character
+                }
                 if (chr == Constants.C_BACK_SLASH)
                 {
                     switch (Next())
@@ -254,6 +270,7 @@ namespace Stratumn.CanonicalJson
         /***
          * Reads 4 characters and attempts to convert hex to char
          * @return
+         * @throws IOException 
          */
         private Char ParseHex()
         {
@@ -275,6 +292,7 @@ namespace Stratumn.CanonicalJson
         /***
          * Returns the next non white character without moving the cursor to it.
          * @return
+         * @throws IOException
          */
         private Char Peek()
         {
@@ -299,6 +317,7 @@ namespace Stratumn.CanonicalJson
         /***
          * Moves to the next nonwhitepace character and tests if that char matches expected
          * @param expected
+         * @throws IOException
          */
         private void ScanFor(char expected)
         {
@@ -313,6 +332,7 @@ namespace Stratumn.CanonicalJson
         /*** 
          * Moves to the next non-whitespace character
          * @return
+         * @throws IOException
          */
         private Char Scan()
         {
@@ -323,6 +343,7 @@ namespace Stratumn.CanonicalJson
         /***
          * Jumps to the next character 
          * @return next char or null if end is reached
+         * @throws IOException
          */
         private Char Next()
         {

@@ -132,7 +132,8 @@
   <ItemGroup>
     <Compile Include="Stratumn\Canonical\CanonicalJson.cs" />
     <Compile Include="Stratumn\Canonical\Constants.cs" />
-    <Compile Include="Stratumn\Canonical\HashMapHelper.cs" />
+    <Compile Include="Stratumn\Canonical\helpers\HashMapHelper.cs" />
+    <Compile Include="Stratumn\Canonical\helpers\CharsHelper.cs" />
     <Compile Include="Stratumn\Canonical\Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stratumn\Canonical\Transformer.cs" />

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stratumn.CanonicalJson
+namespace Stratumn.Canonical
 {
-    /**
- * Common Characters 
- */
+    /// <summary>
+    /// @ copyright Stratumn
+    /// </summary>
     public sealed class Constants
     {
 
@@ -26,5 +26,6 @@ namespace Stratumn.CanonicalJson
         public const char C_CARRIAGE_RETURN = '\r';
         public const char C_FORM_FEED = '\f';
         public const char C_BACKSPACE = '\b';
+        public const char NULL_CHAR = '\u0000';
     }
 }

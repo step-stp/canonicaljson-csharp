@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 using java.math;
 using System.Globalization;
 using java.text;
+using Stratumn.Canonical.Helpers;
+using Stratumn.Canonical.helpers;
 
-namespace Stratumn.CanonicalJson
+namespace Stratumn.Canonical
 {
 
-
-    /***
- * Transformer converts and JSON stream to an object Vector / Map / Java Object
- * 
- *
- */
+    /// <summary>
+    /// @copyright Stratum
+    ///  Transformer converts and JSON stream to an object Vector / Map / Java Object
+    /// </summary>
     public class Transformer
     {
 
-        private StringBuilder buffer;
+        private java.lang.StringBuilder buffer;
         /* Regular expressions that matches characters otherwise inexpressible in 
           JSON (U+0022 QUOTATION MARK, U+005C REVERSE SOLIDUS, 
          and ASCII control characters U+0000 through U+001F) or UTF-8 (U+D800 through U+DFFF) */
@@ -31,14 +31,14 @@ namespace Stratumn.CanonicalJson
 
         public string Transform(Object obj)
         {
-            buffer = new StringBuilder();
+            buffer = new java.lang.StringBuilder();
             Serialize(obj);
             return buffer.ToString();
         }
 
         private void Escape(char c)
         {
-            buffer.Append(Constants.C_BACK_SLASH).Append(c);
+            buffer.append(Constants.C_BACK_SLASH).append(c);
         }
 
         /***
@@ -59,55 +59,66 @@ namespace Stratumn.CanonicalJson
           */
         private void SerializeString(string value)
         {
-            buffer.Append(Constants.C_DOUBLE_QUOTE);
+            buffer.append(Constants.C_DOUBLE_QUOTE);
             if (FORBIDDEN.Matches(value).Count == 0)
             {
-                buffer.Append(value);
+                buffer.append(value);
             }
             else
             {
-                foreach (char c in value.ToCharArray())
+                char[] chars = value.ToCharArray();
+                for (int i = 0; i < chars.Length; i++)
                 {
-                    if (FORBIDDEN.Matches(Convert.ToString(c)).Count == 0)
+                    char c = chars[i];
                     {
-                        buffer.Append(c);
-                        continue;
-                    }
-                    switch (c)
-                    {
-                        case Constants.C_LINE_FEED:
-                            Escape('n');
-                            break;
-                        case Constants.C_BACKSPACE:
-                            Escape('b');
-                            break;
+                        if (FORBIDDEN.Matches(Convert.ToString(c)).Count == 0)
+                        {
+                            buffer.append(c);
+                            continue;
+                        }
+                        if (java.lang.Character.isSurrogate(chars[i]) && chars.Length > i + 1 && java.lang.Character.isSurrogatePair(chars[i], chars[i + 1]))
+                        {
+                            buffer.appendCodePoint(CharHelper.ToCodePoint(chars[i], chars[++i]));
+                            continue;
+                        }
+                        switch (c)
+                        {
+                            case Constants.C_LINE_FEED:
+                                Escape('n');
+                                break;
+                            case Constants.C_BACKSPACE:
+                                Escape('b');
+                                break;
 
-                        case Constants.C_FORM_FEED:
-                            Escape('f');
-                            break;
+                            case Constants.C_FORM_FEED:
+                                Escape('f');
+                                break;
 
-                        case Constants.C_CARRIAGE_RETURN:
-                            Escape('r');
-                            break;
+                            case Constants.C_CARRIAGE_RETURN:
+                                Escape('r');
+                                break;
 
-                        case Constants.C_TAB:
-                            Escape('t');
-                            break;
+                            case Constants.C_TAB:
+                                Escape('t');
+                                break;
 
-                        case Constants.C_DOUBLE_QUOTE:
-                        case Constants.C_BACK_SLASH:
-                            Escape(c);
-                            break;
+                            case Constants.C_DOUBLE_QUOTE:
+                            case Constants.C_BACK_SLASH:
+                                Escape(c);
+                                break;
 
-                        default:
-                            Escape('u');
-                            string hex = string.Format("{0:x4}", (int)c);
-                            buffer.Append(hex.ToUpper());
-                            break;
+                            default:
+
+                                Escape('u');
+                                string hex = string.Format("{0:x4}", (int)c).ToUpper();
+                                buffer.append(hex);
+                                break;
+
+                        }
                     }
                 }
             }
-            buffer.Append(Constants.C_DOUBLE_QUOTE);
+            buffer.append(Constants.C_DOUBLE_QUOTE);
         }
 
         /***
@@ -124,15 +135,17 @@ namespace Stratumn.CanonicalJson
         * including no plus sign in the exponent, and
         * including no insignificant leading zeroes in the exponent
          * @param bd
+         * @throws IOException
          */
 
         private void SerializeNumber(string value)
         {
 
+            //    decimal dc = decimal.Parse(value);
             BigDecimal bd = new BigDecimal(value);
             try
             {  //attempt converting to fixed number
-                buffer.Append(bd.toBigIntegerExact().toString());
+                buffer.append(bd.toBigIntegerExact().toString());
 
             }
             catch (java.lang.ArithmeticException e)
@@ -142,38 +155,39 @@ namespace Stratumn.CanonicalJson
                 formatter.setMaximumFractionDigits(bd.precision());
                 string val = formatter.format(bd).Replace("+", "");
 
-                buffer.Append(val);
+                buffer.append(val);
             }
 
         }
 
-        /***
- * Attempts to serialize an object of type treemap, collection, null , string , boolean , bigdecimal
- * @param o
- */
         private void Serialize(Object o)
         {
-            Debug.WriteLine(o?.ToString());
             if (o is SortedDictionary<string, Object>)
             {
+                SortedDictionary<String, Object> sortedTree = new SortedDictionary<String, Object>(new LexComparator());
+                var tree = (SortedDictionary<string, Object>)o;
 
-                buffer.Append('{');
+
+                tree.ToList().ForEach(t => sortedTree.Add(t.Key, t.Value));
+
+
+                buffer.append('{');
                 bool next = false;
 
-                foreach (KeyValuePair<string, object> keyValue in ((SortedDictionary<string, object>)o).SetOfKeyValuePairs())
+                foreach (KeyValuePair<string, object> keyValue in sortedTree.SetOfKeyValuePairs())
                 {
                     if (next)
                     {
-                        buffer.Append(',');
+                        buffer.append(',');
                     }
                     next = true;
                     SerializeString(keyValue.Key);
-                    buffer.Append(':');
+                    buffer.append(':');
                     Debug.WriteLine(keyValue.Value);
 
                     Serialize(keyValue.Value);
                 }
-                buffer.Append('}');
+                buffer.append('}');
             }
             else
             {
@@ -181,26 +195,26 @@ namespace Stratumn.CanonicalJson
 
                 if (o is List<Object>)
                 {
-                  
-                    buffer.Append('[');
+
+                    buffer.append('[');
                     bool next = false;
 
                     foreach (Object value in (List<Object>)o)
                     {
                         if (next)
                         {
-                            buffer.Append(',');
+                            buffer.append(',');
                         }
                         next = true;
                         Serialize(value);
                     }
-                    buffer.Append(']');
+                    buffer.append(']');
                 }
                 else
                 {
                     if (o == null)
                     {
-                        buffer.Append("null");
+                        buffer.append("null");
                     }
                     else
                     {
@@ -212,7 +226,7 @@ namespace Stratumn.CanonicalJson
                         {
                             if (o is bool?)
                             {
-                                buffer.Append(((bool?)o).ToString().ToLower());
+                                buffer.append(((bool?)o).ToString().ToLower());
                             }
                             else
                             {

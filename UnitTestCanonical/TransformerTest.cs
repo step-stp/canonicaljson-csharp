@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
 using System.IO;
-using Stratumn.CanonicalJson;
+using Stratumn.Canonical;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using java.math;
@@ -10,6 +10,9 @@ using System.Linq;
 
 namespace UnitTestCanonical
 {
+    /// <summary>
+    /// @copyRight Stratumn
+    /// </summary>
     [TestClass]
     public class TransformerTest
     {

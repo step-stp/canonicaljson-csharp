@@ -2,12 +2,15 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
 using System.IO;
-using Stratumn.CanonicalJson;
+using Stratumn.Canonical;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace UnitTestCanonical
 {
+    /// <summary>
+    /// @copyRight Stratumn
+    /// </summary>
     [TestClass]
     public class CanonicalJsonTest
     {
@@ -16,112 +19,99 @@ namespace UnitTestCanonical
 
 
         /***
-      * Reads both input file and expected file
-      * Parse input file, Stringify the output 
-      * compares the out of the process to the expected file.
-
-      * @param inputFile
-      * @param expectedFile
-      * @return
-      * @
-      */
-
-        private static string[] Test(string inputFile, string expectedFile)
+       * Reads both input file and expected file
+       * Parse input file , Stringify the output 
+       * compares the out of the process to the expected file .
+       * @param inputFile
+       * @param expectedFile
+       * @return
+       * @throws IOException
+       */
+        private string[] ApplyParseStringify(string inputFile, string expectedFile)
         {
+            //    File inputFileObj = new File(inputFile);
 
-            string rawInput = File.ReadAllText(inputFile, Encoding.UTF8);
+            string rawInput = String.Join("", File.ReadAllLines(inputFile, Encoding.UTF8));
 
             string expected = null;
             if (expectedFile != null)
-                expected = File.ReadAllText(expectedFile, Encoding.UTF8).Trim();
-
-
+                expected = String.Join("", File.ReadAllLines(expectedFile, Encoding.UTF8));
 
             string actual = CanonicalJson.Stringify(CanonicalJson.Parse(rawInput));
+
+            string parent = Path.GetDirectoryName(inputFile);
+            File.WriteAllBytes(Path.Combine(parent, "output.json"), Encoding.UTF8.GetBytes(actual));
 
             return new String[] { rawInput, expected, actual };
         }
 
+
+
         [TestMethod]
-        public void Arrays()
+        public void CanonicalJsonSpecTests()
         {
-            Console.WriteLine("arrays.json");
-            string[] expact = Test(INPUT + "arrays.json", OUTPUT + "arrays.json");
-            Assert.AreEqual(expact[1], expact[2]);
+            // get folders that contain input / expected json files.
+            string rootFolder = "Resources";
+            ProcessTestFiles(rootFolder, true);
         }
 
-
-        [TestMethod]
-        public void French()
+        /***
+    * Processes all input files, creates output files in same folder, and compares the output to the expected. 
+    * An error is displayed if there is a comparison failure. 
+    * An error is displayed if there is a malformed JSON.
+    * @param folder
+    */
+        private void ProcessTestFiles(string folder, bool addLineSeparators)
         {
-            Console.WriteLine("arrays.json");
-            String[] expact = Test(INPUT + "french.json", OUTPUT + "french.json");
-            Assert.AreEqual(expact[1], expact[2]);
-        }
+            List<string> testFolders = null;
+            if (File.Exists(folder))
+            {
+                testFolders = new List<string>();
+                testFolders.Add(Path.GetDirectoryName(folder));
+            }
 
 
-        [TestMethod]
-        public void structures()
-        {
-            Console.WriteLine("structures.json");
-            String[] expact = Test(INPUT + "structures.json", OUTPUT + "structures.json");
-            Assert.AreEqual(expact[1], expact[2]);
-        }
+            else if (Directory.Exists(folder))
+                testFolders = GetTestFolders(folder);
 
-        [TestMethod]
-        public void values()
-        {
-            Console.WriteLine("valuesrrays.json");
-            String[] expact = Test(INPUT + "values.json", OUTPUT + "values.json");
-            Assert.AreEqual(expact[1], expact[2]);
-        }
-
-        [TestMethod]
-        public void weird()
-        {
-            Console.WriteLine("weird.json");
-            String[]
-            expact = Test(INPUT + "weird.json", OUTPUT + "weird.json");
-            Assert.AreEqual(expact[1], expact[2]);
-        }
-
-        [TestMethod]
-        public void CanonicaljsonSpecTests()
-        {
-            string rootPath = "resources/test/";
-
-            List<string> testFolders = GetTestFolders(rootPath);
 
             foreach (string testfolder in testFolders)
             {
+                string expected = Path.Combine(testfolder, "expected.json");
 
                 string input = Path.Combine(testfolder, "input.json");
-                string expected = Path.Combine(testfolder, "expected.json");
+
 
                 if (!File.Exists(input))
                 {
-                    Console.Error.WriteLine("Input   files missing in " + testfolder);
+                    Console.Error.WriteLine("Input  files missing in " + Path.GetFullPath(testfolder));
                     continue;
                 }
                 if (!File.Exists(expected))
                     expected = null;
+                String[] expact = null;
                 try
                 {
-                    Console.WriteLine(input);
-
-                    String[] expact = Test(input, expected == null ? null : expected);
-
-                    Assert.AreEqual(expact[1], (expact[2]));
+                    expact = ApplyParseStringify(input, expected == null ? null : expected);
+                    if (expact != null && expact[1] != null && !expact[2].Equals(expact[1]))
+                    {
+                        string message = "Values not equal Expected/Actual @" + testfolder + "\r\n"
+                        + (expact[1] != null ? "Expected: \r\n" + (addLineSeparators ? Regex.Replace(expact[1], ",", ",\r\n") : expact[1]) + "\r\n" : "") //expected
+                        + "Actual: \r\n"
+                        + (addLineSeparators ? Regex.Replace(expact[2], ",", ",\r") : expact[2]);  //actual
+                        Console.Error.WriteLine(message);
+              
+                    }
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
-                    throw new Exception("Malformed JSON: " + e.Message);
-
+                    Console.Error.WriteLine("Malformed JSON: " + e.Message + " @ " + testfolder);
                 }
-
+              
             }
-
         }
+
+
 
         /***
          * recursively finds the folders containing input.json
