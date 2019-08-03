@@ -1,11 +1,13 @@
 # canonicaljson-csharp
 C Sharp library for producing JSON in canonical format. 
 
-1- Download and build the application
-2- Run the unit tests available in UnitTestCanonical project
-3- You can also run command prompt for executable under UnitTestCanonical project as follows:
+1- Build the application using visual studio and run the unit tests. Make sure to set the "ResourcesFolder" key in the application config file.
 
-UnitTestCanonical.exe "path for folder"
+  Or
+  
+2- From the compiledConsole folder, run command prompt for executable as follows:
+
+UnitTestCanonical.exe "full path for folder"
 
 All subfolders with an input.json (and expected.json) will be picked up and processed as follows: \
   1- The file input.json will be parsed 
