@@ -5,7 +5,7 @@ C Sharp library for producing JSON in canonical format.
 
   Or
   
-2- From the compiledConsole folder, run command prompt for executable as follows:
+2- Compile the code and run the command prompt for test project executable as follows:
 
 UnitTestCanonical.exe "full path for folder"
 
