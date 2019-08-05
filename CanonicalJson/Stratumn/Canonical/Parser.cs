@@ -191,7 +191,7 @@ namespace Stratumn.Canonical
                 }
                 return new BigDecimal(token);
             }
-            else if (BOOLEAN_PATTERN.Matches(token).Count > 0)
+            else if (BOOLEAN_PATTERN.IsMatch(token))
             {
                 return Convert.ToBoolean(token);
             }
