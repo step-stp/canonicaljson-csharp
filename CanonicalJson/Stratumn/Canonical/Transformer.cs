@@ -140,8 +140,7 @@ namespace Stratumn.Canonical
 
         private void SerializeNumber(string value)
         {
-
-            //    decimal dc = decimal.Parse(value);
+           
             BigDecimal bd = new BigDecimal(value);
             try
             {  //attempt converting to fixed number
