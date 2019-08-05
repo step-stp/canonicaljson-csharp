@@ -22,8 +22,7 @@ namespace ConsoleCanonical
          return;
                 
       }
-    
-            new CanonicalJsonTest().ProcessTestFiles(@"C:\Users\ybatsh\Downloads\canonicaljson-csharp-master\canonicaljson-csharp-master\UnitTestCanonical\Resources\test\4.integer\1.no-negative-zero", false);
+               
       if (File.Exists(args[0])  || Directory.Exists(args[0]) )
           new CanonicalJsonTest().ProcessTestFiles(args[0], false);   
         }
