@@ -61,6 +61,8 @@ namespace UnitTestCanonical
         */
         public void ProcessTestFiles(string folder, bool addLineSeparators)
         {
+            int TestFailed = 0;
+
             List<string> testFolders = null;
             if (File.Exists(folder))
             {
@@ -99,16 +101,19 @@ namespace UnitTestCanonical
                         + (expact[1] != null ? "Expected: \r\n" + (addLineSeparators ? Regex.Replace(expact[1], ",", ",\r\n") : expact[1]) + "\r\n" : "") //expected
                         + "Actual: \r\n"
                         + (addLineSeparators ? Regex.Replace(expact[2], ",", ",\r") : expact[2]);  //actual
-                        Console.Error.WriteLine(message);
               
+                        TestFailed++;
+
+                        Console.Error.WriteLine(message);
                     }
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine("Malformed JSON: " + e.Message + " @ " + testfolder);
                 }
-              
             }
+            if (TestFailed > 0)
+                Assert.Fail(TestFailed.ToString() + " test(s) failed: Please check output window for details!");
         }
 
 
