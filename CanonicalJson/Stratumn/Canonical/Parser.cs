@@ -19,8 +19,10 @@ namespace Stratumn.Canonical
     {
 
         private static readonly char NULL_CHAR = '\u0000';
-        private static readonly Regex BOOLEAN_PATTERN = new Regex("true|false", RegexOptions.IgnoreCase);
-        private static readonly Regex NUMBER_PATTERN = new Regex("-?[0-9]+(\\.[0-9]+)?([eE][-+]?[0-9]+)?", RegexOptions.IgnoreCase);
+        private static readonly Regex BOOLEAN_PATTERN = new Regex("true|false", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        
+        private static readonly Regex NUMBER_PATTERN = new Regex(@"^-?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
 
         private static readonly Regex BAD_NUMBER_PATTERN = new Regex("^-?0\\d+");
 
@@ -30,7 +32,7 @@ namespace Stratumn.Canonical
         // U+DFFF)
         private static readonly Regex FORBIDDEN = new Regex("[\\u0022\\u005c\\u0000-\\u001F\\ud800-\\udfff]");
 
-        private static readonly Regex HEX_PATTERN = new Regex("([0-9,a-f,A-F]){4}", RegexOptions.IgnoreCase);
+        private static readonly Regex HEX_PATTERN = new Regex("([0-9,a-f,A-F]){4}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /***
          * index and value of the current character
