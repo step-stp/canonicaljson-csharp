@@ -7,7 +7,7 @@ C Sharp library for producing JSON in canonical format.
   
 2- Compile the code and run the command prompt for test project executable as follows:
 
-UnitTestCanonical.exe "full path for folder"
+Stratumn.CanonicalJsonTest.exe "full path for folder"
 
 All subfolders with an input.json (and expected.json) will be picked up and processed as follows: \
   1- The file input.json will be parsed 
