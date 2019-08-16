@@ -1,5 +1,4 @@
 ﻿
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,10 +9,10 @@ using System.Threading.Tasks;
 using java.math;
 using System.Globalization;
 using java.text;
-using Stratumn.Canonical.Helpers;
-using Stratumn.Canonical.helpers;
+using Stratumn.CanonicalJson.Helpers;
+using Stratumn.CanonicalJson.helpers;
 
-namespace Stratumn.Canonical
+namespace Stratumn.CanonicalJson 
 {
 
     /// <summary>
@@ -147,7 +146,7 @@ namespace Stratumn.Canonical
                 buffer.append(bd.toBigIntegerExact().toString());
 
             }
-            catch (java.lang.ArithmeticException e)
+            catch (java.lang.ArithmeticException  )
             {
                 NumberFormat formatter = new DecimalFormat("0.0E0");
                 formatter.setMinimumFractionDigits(1);

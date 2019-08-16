@@ -8,9 +8,10 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Stratumn.CanonicalJson</RootNamespace>
     <AssemblyName>Stratumn.CanonicalJson</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -130,7 +131,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Stratumn\Canonical\CanonicalJson.cs" />
+    <Compile Include="Stratumn\Canonical\Canonicalizer.cs" />
     <Compile Include="Stratumn\Canonical\Constants.cs" />
     <Compile Include="Stratumn\Canonical\helpers\HashMapHelper.cs" />
     <Compile Include="Stratumn\Canonical\helpers\CharsHelper.cs" />

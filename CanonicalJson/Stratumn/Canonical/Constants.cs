@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stratumn.Canonical
+namespace Stratumn.CanonicalJson
 {
     /// <summary>
     /// @ copyright Stratumn
