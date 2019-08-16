@@ -26,6 +26,8 @@ namespace Stratumn.CanonicalJsonTest
             {
                 new CanonicalJsonTest().ProcessTestFiles(args[0], false);
             }
+            else
+                Console.Error.WriteLine("File or folder not found !"   );
             Console.ReadLine();
         }
     }

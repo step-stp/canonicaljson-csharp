@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanonicalJson", "CanonicalJson\CanonicalJson.csproj", "{F2EC8A3F-A4EF-4675-985D-8DA3EF0D141B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestCanonical", "UnitTestCanonical\UnitTestCanonical.csproj", "{CCE48034-B90A-42AF-9118-68D503DFDEFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanonicalJsonTest", "CanonicalTest\CanonicalJsonTest.csproj", "{CCE48034-B90A-42AF-9118-68D503DFDEFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08EFA077-B413-460A-A844-E121D1D46C76}
 	EndGlobalSection
 EndGlobal
