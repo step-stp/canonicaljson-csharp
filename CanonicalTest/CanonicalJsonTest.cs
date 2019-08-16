@@ -26,11 +26,11 @@ namespace Stratumn.CanonicalJsonTest
        */
         private string[] ApplyParseStringify(string inputFile, string expectedFile)
         {
-            string rawInput = String.Join("", File.ReadAllLines(inputFile, Encoding.UTF8));
+            string rawInput = File.ReadAllText(inputFile, Encoding.UTF8).Trim();
 
             string expected = null;
             if (expectedFile != null)
-                expected = String.Join("", File.ReadAllLines(expectedFile, Encoding.UTF8));
+                expected = File.ReadAllText(expectedFile, Encoding.UTF8).Trim();
 
             string actual = Canonicalizer.Canonizalize(rawInput);
 
