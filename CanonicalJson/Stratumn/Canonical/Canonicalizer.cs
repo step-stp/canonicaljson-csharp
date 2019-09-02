@@ -34,6 +34,12 @@ namespace Stratumn.CanonicalJson
             return new Parser(source).Parse();
         }
 
+        /***
+        * Parses a string to object and converts it back to string in canonical Json form 
+        * @param source
+        * @return
+        * @throws IOException
+        */
         public static String Canonizalize(String source)
         {
             return new Transformer().Transform(new Parser(source).Parse());

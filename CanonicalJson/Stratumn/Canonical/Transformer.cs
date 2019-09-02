@@ -11,8 +11,9 @@ using System.Globalization;
 using java.text;
 using Stratumn.CanonicalJson.Helpers;
 using Stratumn.CanonicalJson.helpers;
+using Newtonsoft.Json;
 
-namespace Stratumn.CanonicalJson 
+namespace Stratumn.CanonicalJson
 {
 
     /// <summary>
@@ -146,7 +147,7 @@ namespace Stratumn.CanonicalJson
                 buffer.append(bd.toBigIntegerExact().toString());
 
             }
-            catch (java.lang.ArithmeticException  )
+            catch (java.lang.ArithmeticException)
             {
                 NumberFormat formatter = new DecimalFormat("0.0E0");
                 formatter.setMinimumFractionDigits(1);
@@ -160,18 +161,17 @@ namespace Stratumn.CanonicalJson
 
         private void Serialize(Object o)
         {
-            if (o is SortedDictionary<string, Object>)
+            if (o == null)
+            {
+                buffer.append("null");
+            }
+            else if (o is IDictionary<string, Object>)
             {
                 SortedDictionary<String, Object> sortedTree = new SortedDictionary<String, Object>(new LexComparator());
-                var tree = (SortedDictionary<string, Object>)o;
-
-
+                var tree = (IDictionary<string, Object>)o;
                 tree.ToList().ForEach(t => sortedTree.Add(t.Key, t.Value));
-
-
                 buffer.append('{');
                 bool next = false;
-
                 foreach (KeyValuePair<string, object> keyValue in sortedTree.SetOfKeyValuePairs())
                 {
                     if (next)
@@ -182,65 +182,57 @@ namespace Stratumn.CanonicalJson
                     SerializeString(keyValue.Key);
                     buffer.append(':');
                     Debug.WriteLine(keyValue.Value);
-
                     Serialize(keyValue.Value);
                 }
                 buffer.append('}');
             }
             else
+              if (o is List<Object>)
             {
 
+                buffer.append('[');
+                bool next = false;
 
-                if (o is List<Object>)
+                foreach (Object value in (List<Object>)o)
                 {
-
-                    buffer.append('[');
-                    bool next = false;
-
-                    foreach (Object value in (List<Object>)o)
+                    if (next)
                     {
-                        if (next)
-                        {
-                            buffer.append(',');
-                        }
-                        next = true;
-                        Serialize(value);
+                        buffer.append(',');
                     }
-                    buffer.append(']');
+                    next = true;
+                    Serialize(value);
                 }
-                else
-                {
-                    if (o == null)
-                    {
-                        buffer.append("null");
-                    }
-                    else
-                    {
-                        if (o is string)
-                        {
-                            SerializeString((string)o);
-                        }
-                        else
-                        {
-                            if (o is bool?)
-                            {
-                                buffer.append(((bool?)o).ToString().ToLower());
-                            }
-                            else
-                            {
-                                if (o is double? || o is decimal || o is int? || o is BigDecimal)
-                                {
-                                    SerializeNumber(o.ToString());
-                                }
-                                else
-                                {
-                                    throw new ApplicationException("Unknown object: " + o);
-                                }
-                            }
-                        }
-                    }
-                }
+                buffer.append(']');
             }
+            else if (o is string)
+            {
+                SerializeString((string)o);
+            }
+            else if (o is bool?)
+            {
+                buffer.append(((bool?)o).ToString().ToLower());
+            }
+            else if (o is double? || o is decimal || o is int? || o is BigDecimal)
+            {
+                SerializeNumber(o.ToString());
+            }
+            else
+            {
+
+                try
+                {
+                    //attempt to serialize unknown type.
+                    String json = JsonConvert.SerializeObject(o, JsonSerializeSettings);
+                    //parse and searialize it to make sure its canonicalized.
+                    Serialize(new Parser(json).Parse());
+                }
+                catch (Exception e)
+                {
+                    throw new ApplicationException("Unknown object: " + o);
+                }
+                
+            }
+
         }
 
         public string GetEncodedString()
@@ -252,6 +244,25 @@ namespace Stratumn.CanonicalJson
         public byte[] GetEncodedUTF8()
         {
             return Encoding.UTF8.GetBytes(GetEncodedString());
+        }
+
+        
+        private JsonSerializerSettings JsonSerializeSettings;
+        /// <summary>
+        /// To support Json serialization of objectsS
+        /// </summary>
+        /// <returns></returns>
+        private JsonSerializerSettings GetJsonSerializeSettings()
+        { 
+            if (this.JsonSerializeSettings == null)
+            {
+                JsonSerializeSettings = new JsonSerializerSettings();
+                JsonSerializeSettings.NullValueHandling = NullValueHandling.Include;
+                JsonSerializeSettings.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
+            }
+            return JsonSerializeSettings;
+
+
         }
     }
 }
