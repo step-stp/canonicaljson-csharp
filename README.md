@@ -1,22 +1,24 @@
-# canonicaljson-csharp
-C Sharp library for producing JSON in canonical format. 
+# .Net Canonicaljson
 
-1- Build the application using visual studio and run the unit tests. Make sure to set the "ResourcesFolder" key in the application config file.
 
-  Or
-  
-2- Compile the code and run the command prompt for test project executable as follows:
+.Net library for producing JSON in canonical format as specified by [https://gibson042.github.io/canonicaljson-spec/](https://gibson042.github.io/canonicaljson-spec/). The provided interface matches that of native JSON object.
 
-Stratumn.CanonicalJsonTest.exe "full path for folder"
+## Installation
 
-All subfolders with an input.json (and expected.json) will be picked up and processed as follows: \
-  1- The file input.json will be parsed 
-  2- The resulting object will be stringify-ed 
-  3- If expected.json is available it will be compared to the result string. 
-  4- An output.json will be created with the result of the process.
+Use the nuget package manager console to install canonicaljson.
 
-or
+```bash
+Install-Package Stratumn.CanonicalJson
+```
 
-RunTest.cmd [put path for JSON file]
+## Usage
 
-The input file will be parsed and the result object stringify-ed and an output.json will be created in the same folder.
+```python
+import Stratumn.CanonicalJson;
+
+string obj = Canonicalizer.Canonizalize("{ \"a\": 12 }"));
+```
+
+
+## Development
+Integration tests are located in [canonicaljson-spec](https://gibson042.github.io/canonicaljson-spec/)  .

@@ -32,7 +32,7 @@ namespace Stratumn.CanonicalJsonTest
             if (expectedFile != null)
                 expected = File.ReadAllText(expectedFile, Encoding.UTF8).Trim();
 
-            string actual = Canonicalizer.Canonizalize(rawInput);
+            string actual = Canonicalizer.Canonicalize(rawInput);
 
             string parent = Path.GetDirectoryName(inputFile);
             File.WriteAllBytes(Path.Combine(parent, "output.json"), Encoding.UTF8.GetBytes(actual));

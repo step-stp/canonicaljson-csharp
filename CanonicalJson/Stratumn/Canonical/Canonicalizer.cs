@@ -40,7 +40,7 @@ namespace Stratumn.CanonicalJson
         * @return
         * @throws IOException
         */
-        public static String Canonizalize(String source)
+        public static String Canonicalize(String source)
         {
             return new Transformer().Transform(new Parser(source).Parse());
         }
